@@ -42,6 +42,20 @@ impl InputPrompt {
         }
     }
 
+    pub fn get_two_usize_numbers(self) -> (usize, usize) {
+        loop {
+            match self.read_input() {
+                Ok(input) => {
+                    let parts: Vec<&str> = input.split(" ").collect();
+                    let x = parts[0].trim().parse::<usize>().unwrap();
+                    let y = parts[1].trim().parse::<usize>().unwrap();
+                    return (x, y);
+                }
+                Err(error) => Self::display_error(&error),
+            }
+        }
+    }
+
     fn read_input(&self) -> Result<String, String> {
         Self::display_prompt(&self.prompt);
 
@@ -65,6 +79,6 @@ impl InputPrompt {
     }
 
     fn display_error(error: &str) {
-        eprintln!("Error: {}", error);
+        eprintln!("[Error] {}", error);
     }
 }

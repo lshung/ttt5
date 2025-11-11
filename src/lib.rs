@@ -9,21 +9,27 @@ use self::player::Player;
 use std::rc::Rc;
 
 pub fn run() {
-    let width: usize = util::input_board_width();
-    let height: usize = util::input_board_height();
+    let board_width: usize = util::input_board_width();
+    let board_height: usize = util::input_board_height();
 
     let player_1 = Rc::new(Player::new("X"));
     let player_2 = Rc::new(Player::new("O"));
     let player_none = Rc::new(Player::new(" "));
 
-    let mut movements = Movement::new(width, height, Rc::clone(&player_none));
+    let mut movements = Movement::new(board_width, board_height, Rc::clone(&player_none));
+    let mut board = Board::new(board_width, board_height, &movements);
+
+    util::clear_screen();
+    board.draw();
 
     let mut current_player = &player_1;
     let mut i: usize = 1;
 
     while i <= 5 {
-        movements.add(i, i, Rc::clone(current_player));
-        let board = Board::new(width, height, &movements);
+        let (x, y) = util::input_movement(board_width, board_height, current_player.get_symbol());
+
+        movements.add(x, y, Rc::clone(current_player));
+        board = Board::new(board_width, board_height, &movements);
 
         util::clear_screen();
         board.draw();
