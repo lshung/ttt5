@@ -9,27 +9,11 @@ pub struct Board<'a> {
 
 impl<'a> Board<'a> {
     pub fn new(width: usize, height: usize, movements: &'a Movement) -> Self {
-        Self::validate_board_size(width, height);
         Self {
             width: width,
             height: height,
             left_padding: Self::calculate_left_padding(height),
             movements: movements,
-        }
-    }
-
-    fn validate_board_size(width: usize, height: usize) {
-        if width >= 1000 {
-            panic!("Width of the board must be less than 1000.");
-        }
-        if width < 5 {
-            panic!("Width of the board must be at least 5.");
-        }
-        if height >= 100 {
-            panic!("Height of the board must be less than 100.");
-        }
-        if height < 5 {
-            panic!("Height of the board must be at least 5.");
         }
     }
 
