@@ -1,20 +1,24 @@
-pub struct Board {
-    width: i32,
-    height: i32,
+use super::movement::Movement;
+
+pub struct Board<'a> {
+    width: usize,
+    height: usize,
     left_padding: usize,
+    movements: &'a Movement,
 }
 
-impl Board {
-    pub fn new(width: i32, height: i32) -> Self {
+impl<'a> Board<'a> {
+    pub fn new(width: usize, height: usize, movements: &'a Movement) -> Self {
         Self::validate_board_size(width, height);
         Self {
             width: width,
             height: height,
             left_padding: Self::calculate_left_padding(height),
+            movements: movements,
         }
     }
 
-    fn validate_board_size(width: i32, height: i32) {
+    fn validate_board_size(width: usize, height: usize) {
         if width >= 1000 {
             panic!("Width of the board must be less than 1000.");
         }
@@ -29,7 +33,7 @@ impl Board {
         }
     }
 
-    fn calculate_left_padding(height: i32) -> usize {
+    fn calculate_left_padding(height: usize) -> usize {
         match height {
             n if n < 10 => 2,
             n if n < 100 => 3,
@@ -71,16 +75,17 @@ impl Board {
         println!();
     }
 
-    fn print_single_row(&self, row_index: i32) {
+    fn print_single_row(&self, row_index: usize) {
         self.print_y_axis_number(row_index);
-        for _ in 0..self.width {
-            print!("| {} ", "X");
+        for i in 0..self.width {
+            let player_symbol = &self.movements.get_player_at(i, row_index).get_symbol();
+            print!("| {} ", player_symbol);
         }
         print!("|");
         println!();
     }
 
-    fn print_y_axis_number(&self, row_index: i32) {
+    fn print_y_axis_number(&self, row_index: usize) {
         match row_index {
             n if n + 1 < 10 => print!("{}{} ", " ".repeat(self.left_padding - 2), n + 1),
             n if n + 1 < 100 => print!("{}{} ", " ".repeat(self.left_padding - 3), n + 1),
