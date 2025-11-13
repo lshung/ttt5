@@ -21,6 +21,7 @@ impl InputPrompt {
         self
     }
 
+    #[allow(dead_code)]
     pub fn get_text(self) -> String {
         loop {
             match self.read_input() {

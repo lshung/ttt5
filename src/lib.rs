@@ -26,9 +26,16 @@ pub fn run() {
     let mut i: usize = 1;
 
     while i <= 5 {
-        let (x, y) = util::input_movement(board_width, board_height, current_player.get_symbol());
+        loop {
+            let (x, y) =
+                util::input_movement(board_width, board_height, current_player.get_symbol());
+            if let Err(error) = movements.add(x, y, Rc::clone(current_player)) {
+                eprintln!("[Error] {}", error);
+                continue;
+            }
+            break;
+        }
 
-        movements.add(x, y, Rc::clone(current_player));
         board = Board::new(board_width, board_height, &movements);
 
         util::clear_screen();

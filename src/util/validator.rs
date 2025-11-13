@@ -1,6 +1,6 @@
-pub struct Validators;
+pub struct Validator;
 
-impl Validators {
+impl Validator {
     pub fn non_empty() -> impl Fn(&str) -> Result<(), String> {
         |input: &str| {
             if input.is_empty() {
