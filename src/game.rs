@@ -1,6 +1,7 @@
 mod board;
 mod movement;
 mod player;
+mod win_checker;
 
 use self::board::Board;
 use self::movement::Movement;
@@ -31,13 +32,14 @@ impl Game {
         self.set_default_movements();
         self.draw_board();
 
-        let mut i: usize = 1;
-        while i <= 5 {
+        while !win_checker::game_over(&self.movements) {
             self.play_single_turn();
-            i += 1;
         }
 
-        println!("Game over!");
+        println!(
+            "Game over! Player '{}' wins!",
+            self.movements.get_last_player().get_symbol()
+        );
     }
 
     fn set_board_size(&mut self) {
@@ -63,7 +65,7 @@ impl Game {
         }
     }
 
-    fn switch_current_player(&mut self) {
+    fn switch_player(&mut self) {
         self.is_player_1_turn = !self.is_player_1_turn;
     }
 
@@ -84,7 +86,7 @@ impl Game {
     fn play_single_turn(&mut self) {
         self.input_movement_until_valid();
         self.draw_board();
-        self.switch_current_player();
+        self.switch_player();
     }
 
     fn input_movement_until_valid(&mut self) {
@@ -96,7 +98,7 @@ impl Game {
                 current_player.get_symbol(),
             );
 
-            if let Err(error) = self.movements.add(x, y, Rc::clone(current_player)) {
+            if let Err(error) = self.movements.add(x - 1, y - 1, Rc::clone(current_player)) {
                 eprintln!("[Error] {}", error);
                 continue;
             }
