@@ -1,6 +1,7 @@
 use super::player::Player;
 use std::rc::Rc;
 
+#[derive(Default)]
 pub struct Movement {
     player_none: Rc<Player>,
     movements: Vec<Vec<Rc<Player>>>,

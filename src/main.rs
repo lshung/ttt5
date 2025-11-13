@@ -1,5 +1,6 @@
-use ttt5::run;
+use ttt5::Game;
 
 fn main() {
-    run();
+    let mut game = Game::new();
+    game.run();
 }
