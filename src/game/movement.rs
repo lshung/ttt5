@@ -20,14 +20,39 @@ impl Movement {
     }
 
     pub fn add(&mut self, x: usize, y: usize, player: Rc<Player>) -> Result<(), String> {
-        if !self.is_cell_empty(x, y) {
-            return Err(format!("Cell at ({}, {}) is not empty.", x + 1, y + 1));
+        if !self.is_movement_available(x, y) {
+            return Err(format!("Position ({}, {}) is not available.", x + 1, y + 1));
         }
 
         self.movements[x][y] = player;
         self.last_x = x;
         self.last_y = y;
+
         Ok(())
+    }
+
+    pub fn remove_last_movement(&mut self) {
+        self.movements[self.last_x][self.last_y] = Rc::clone(&self.player_none);
+    }
+
+    pub fn is_movement_available(&self, x: usize, y: usize) -> bool {
+        self.get_player_at(x, y) == self.get_player_none()
+    }
+
+    pub fn get_available_movements(&self) -> Vec<(usize, usize)> {
+        let mut movements = Vec::new();
+        let width = self.width();
+        let height = self.height();
+
+        for x in 0..width {
+            for y in 0..height {
+                if self.is_movement_available(x, y) {
+                    movements.push((x, y));
+                }
+            }
+        }
+
+        movements
     }
 
     pub fn get_player_none(&self) -> &Player {
@@ -40,10 +65,6 @@ impl Movement {
 
     pub fn get_last_player(&self) -> &Player {
         &self.movements[self.last_x][self.last_y]
-    }
-
-    fn is_cell_empty(&self, x: usize, y: usize) -> bool {
-        &self.movements[x][y] == &self.player_none
     }
 
     pub fn last_x(&self) -> usize {

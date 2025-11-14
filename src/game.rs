@@ -1,9 +1,11 @@
 mod board;
+mod bot;
 mod movement;
 mod player;
 mod win_checker;
 
 use self::board::Board;
+use self::bot::Bot;
 use self::movement::Movement;
 use self::player::Player;
 use crate::util;
@@ -18,6 +20,7 @@ pub struct Game {
     player_none: Rc<Player>,
     is_player_1_turn: bool,
     movements: Movement,
+    bot: Option<Bot>,
 }
 
 impl Game {
@@ -28,6 +31,7 @@ impl Game {
     pub fn run(&mut self) {
         self.set_board_size();
         self.set_default_players();
+        self.enable_bot_for_player_2();
         self.set_default_current_player();
         self.set_default_movements();
         self.draw_board();
@@ -51,6 +55,14 @@ impl Game {
         self.player_1 = Rc::new(Player::new("X"));
         self.player_2 = Rc::new(Player::new("O"));
         self.player_none = Rc::new(Player::new(" "));
+    }
+
+    pub fn enable_bot_for_player_2(&mut self) {
+        self.bot = Some(Bot::new(
+            self.player_none.get_symbol().to_string(),
+            self.player_2.get_symbol().to_string(),
+            self.player_1.get_symbol().to_string(),
+        ));
     }
 
     fn set_default_current_player(&mut self) {
@@ -84,9 +96,28 @@ impl Game {
     }
 
     fn play_single_turn(&mut self) {
-        self.input_movement_until_valid();
+        if self.is_current_player_bot() {
+            self.make_bot_move();
+        } else {
+            self.input_movement_until_valid();
+        }
         self.draw_board();
         self.switch_player();
+    }
+
+    fn is_current_player_bot(&self) -> bool {
+        !self.is_player_1_turn && self.bot.is_some()
+    }
+
+    fn make_bot_move(&mut self) {
+        if let Some(bot) = &self.bot {
+            let current_player = self.get_current_player();
+            let (x, y) = bot.make_movement(&self.movements);
+
+            if let Err(error) = self.movements.add(x, y, Rc::clone(current_player)) {
+                eprintln!("[Error] Bot move failed: {}", error);
+            }
+        }
     }
 
     fn input_movement_until_valid(&mut self) {

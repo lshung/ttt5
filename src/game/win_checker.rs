@@ -43,7 +43,7 @@ fn count_in_direction(movements: &Movement, dx: isize, dy: isize) -> usize {
             break;
         };
 
-        if movements.get_player_at(nx, ny) == last_player {
+        if movements.get_player_at(nx, ny).get_symbol() == last_player.get_symbol() {
             count += 1;
             current_x = nx;
             current_y = ny;
